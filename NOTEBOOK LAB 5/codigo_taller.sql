@@ -629,7 +629,7 @@ INCREMENT BY 1
 NOCYCLE;
 
 
--- DESDE LA LINEA 548 HASTA LA 643 ESTA HECHO CON AYUDA DE IA 
+-- DESDE LA LINEA 548 HASTA LA 629 ESTA HECHO CON AYUDA DE IA 
 
 
 
@@ -639,8 +639,7 @@ NOCYCLE;
 - en la parte de secuencias tambien existen drop para evitar errores de secuencia al insertar datos, 
     ya que si se insertan datos y luego se hace un drop de la secuencia, 
     al volver a crearla esta empezara desde 1 y puede generar conflictos con los id ya existentes en las tablas (me paso xd)
-
-
+- Revisen el readme.md para ver lo que falta
 
 
 */
