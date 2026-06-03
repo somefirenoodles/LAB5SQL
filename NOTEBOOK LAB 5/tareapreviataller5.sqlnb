@@ -1,0 +1,1292 @@
+cells:
+  - kind: 1
+    value: "# IMPLEMENTAR MODELO FISICO"
+    languageId: markdown
+  - kind: 1
+    value: Script (DDL) que corresponde al levantamiento del modelo fisico
+    languageId: markdown
+  - kind: 2
+    value: "-- POR SI HAY QUE HACER CORRECCIONES\r
+
+      \r
+
+      DROP TABLE prestamo CASCADE CONSTRAINTS;\r
+
+      DROP TABLE telefono_cliente CASCADE CONSTRAINTS;\r
+
+      DROP TABLE email CASCADE CONSTRAINTS;\r
+
+      DROP TABLE cliente CASCADE CONSTRAINTS;\r
+
+      DROP TABLE tipo_prestamo CASCADE CONSTRAINTS;\r
+
+      DROP TABLE profesion CASCADE CONSTRAINTS; \r
+
+      \r
+
+      -- La creacion de la tabla profesion se hace antes que cliente por la
+      dependencia de la clave foranea\r
+
+      CREATE TABLE profesion (\r
+
+      \    id_profesion NUMBER PRIMARY KEY,\r
+
+      \    nombre_profesion VARCHAR2(50) NOT NULL UNIQUE\r
+
+      );\r
+
+      --   tipo_prestamo se hace antes que prestamo por la misma razon\r
+
+      CREATE TABLE tipo_prestamo (\r
+
+      \    id_tipo_prestamo NUMBER PRIMARY KEY,\r
+
+      \    nombre_tipo_prestamo VARCHAR2(50) NOT NULL UNIQUE\r
+
+      );\r
+
+      \r
+
+      CREATE TABLE cliente (\r
+
+      \    id_cliente NUMBER PRIMARY KEY,\r
+
+      \    cedula VARCHAR2(25) NOT NULL UNIQUE,\r
+
+      \    nombre VARCHAR2(50) NOT NULL,\r
+
+      \    apellido VARCHAR2(50) NOT NULL,\r
+
+      \    sexo VARCHAR2(2) NOT NULL CHECK (sexo IN ('M', 'F')),\r
+
+      \    fecha_nacimiento DATE NOT NULL,\r
+
+      \    id_profesion NUMBER NOT NULL,\r
+
+      \    CONSTRAINT fk_profesion FOREIGN KEY (id_profesion)\r
+
+      \        REFERENCES profesion(id_profesion)\r
+
+      );\r
+
+      \r
+
+      CREATE TABLE email (\r
+
+      \    id_email NUMBER PRIMARY KEY,\r
+
+      \    email VARCHAR2(100) NOT NULL UNIQUE,\r
+
+      \    tipo_email VARCHAR2(20) NOT NULL CHECK (tipo_email IN ('Personal',
+      'Trabajo', 'Academico')),\r
+
+      \    id_cliente NUMBER NOT NULL,\r
+
+      \    CONSTRAINT fk_cliente_email FOREIGN KEY (id_cliente)\r
+
+      \        REFERENCES cliente(id_cliente)\r
+
+      );\r
+
+      \r
+
+      CREATE TABLE telefono_cliente (\r
+
+      \    id_telefono NUMBER PRIMARY KEY,\r
+
+      \    numero_telefono VARCHAR2(20) NOT NULL UNIQUE,\r
+
+      \    tipo_telefono VARCHAR2(20) NOT NULL \r
+
+      \        CHECK (tipo_telefono IN ('Personal', 'Residencial', 'Conyugal',
+      'Familiar')),\r
+
+      \    id_cliente NUMBER NOT NULL,\r
+
+      \    FOREIGN KEY (id_cliente)\r
+
+      \        REFERENCES cliente(id_cliente)\r
+
+      );\r
+
+      \r
+
+      CREATE TABLE prestamo (\r
+
+      \    id_prestamo NUMBER PRIMARY KEY,\r
+
+      \    id_cliente NUMBER NOT NULL,\r
+
+      \    id_tipo_prestamo NUMBER NOT NULL,\r
+
+      \    num_prestamo VARCHAR2(20) NOT NULL UNIQUE,\r
+
+      \    fecha_aprobacion DATE NOT NULL,\r
+
+      \    monto_aprobado NUMBER NOT NULL\r
+
+      \        CHECK (monto_aprobado > 0),\r
+
+      \    tasa_interes NUMBER NOT NULL\r
+
+      \        CHECK (tasa_interes >= 0 AND tasa_interes <= 100),\r
+
+      \    letra_mensual NUMBER NOT NULL\r
+
+      \        CHECK (letra_mensual > 0),\r
+
+      \    monto_pagado NUMBER NOT NULL,\r
+
+      \    fecha_pago DATE,\r
+
+      \r
+
+      \    CONSTRAINT fk_cliente_prestamo FOREIGN KEY (id_cliente)\r
+
+      \        REFERENCES cliente(id_cliente),\r
+
+      \    CONSTRAINT fk_tipo_prestamo FOREIGN KEY (id_tipo_prestamo)\r
+
+      \        REFERENCES tipo_prestamo(id_tipo_prestamo) \r
+
+      );\r\n"
+    languageId: oracle-sql
+  - kind: 1
+    value: CREAR SECUENCIA PARA LAS ID
+    languageId: markdown
+  - kind: 2
+    value: "CREATE SEQUENCE seq_id_profesion START WITH 1 INCREMENT BY 1 NOCYCLE;
+      --TABLA PROFESION\r
+
+      CREATE SEQUENCE seq_id_cliente START WITH 1 INCREMENT BY 1 NOCYCLE;
+      --TABLA CLIENTE\r
+
+      CREATE SEQUENCE seq_id_email START WITH 1 INCREMENT BY 1 NOCYCLE; --TABLA
+      EMAIL\r
+
+      CREATE SEQUENCE seq_id_telefono START WITH 1 INCREMENT BY 1 NOCYCLE;
+      --TABLA TELEFONO\r
+
+      CREATE SEQUENCE seq_id_prestamo START WITH 1 INCREMENT BY 1 NOCYCLE;
+      --TABLA PRESTAMO\r
+
+      CREATE SEQUENCE seq_id_tipo_prestamo START WITH 1 INCREMENT BY 1 NOCYCLE;
+      --TABLA TIPO_PRESTAMO"
+    languageId: oracle-sql
+  - kind: 1
+    value: INSERTAR DATOS
+    languageId: markdown
+  - kind: 2
+    value: "-- DELETE INSERTS\r
+
+      \r
+
+      DELETE FROM prestamo;\r
+
+      DELETE FROM telefono_cliente;\r
+
+      DELETE FROM email;\r
+
+      DELETE FROM cliente;\r
+
+      DELETE FROM tipo_prestamo;\r
+
+      DELETE FROM profesion;\r
+
+      \r
+
+      -- DROP SECUENCES\r
+
+      DROP SEQUENCE seq_id_profesion;\r
+
+      DROP SEQUENCE seq_id_cliente;\r
+
+      DROP SEQUENCE seq_id_email;\r
+
+      DROP SEQUENCE seq_id_telefono;\r
+
+      DROP SEQUENCE seq_id_prestamo;\r
+
+      DROP SEQUENCE seq_id_tipo_prestamo;\r
+
+      \r
+
+      CREATE SEQUENCE seq_id_profesion START WITH 1 INCREMENT BY 1 NOCYCLE;\r
+
+      CREATE SEQUENCE seq_id_cliente START WITH 1 INCREMENT BY 1 NOCYCLE;\r
+
+      CREATE SEQUENCE seq_id_email START WITH 1 INCREMENT BY 1 NOCYCLE;\r
+
+      CREATE SEQUENCE seq_id_telefono START WITH 1 INCREMENT BY 1 NOCYCLE;\r
+
+      CREATE SEQUENCE seq_id_prestamo START WITH 1 INCREMENT BY 1 NOCYCLE;\r
+
+      CREATE SEQUENCE seq_id_tipo_prestamo START WITH 1 INCREMENT BY 1
+      NOCYCLE;\r
+
+      \r
+
+      COMMIT;\r
+
+      \r
+
+      -- =========================\r
+
+      -- INSERCIONES PROFESION\r
+
+      -- =========================\r
+
+      \r
+
+      INSERT INTO profesion (id_profesion, nombre_profesion)\r
+
+      VALUES (seq_id_profesion.NEXTVAL, 'Ingeniero de Software');\r
+
+      \r
+
+      INSERT INTO profesion (id_profesion, nombre_profesion)\r
+
+      VALUES (seq_id_profesion.NEXTVAL, 'Contador');\r
+
+      \r
+
+      INSERT INTO profesion (id_profesion, nombre_profesion)\r
+
+      VALUES (seq_id_profesion.NEXTVAL, 'Administrador');\r
+
+      \r
+
+      INSERT INTO profesion (id_profesion, nombre_profesion)\r
+
+      VALUES (seq_id_profesion.NEXTVAL, 'Abogado');\r
+
+      \r
+
+      INSERT INTO profesion (id_profesion, nombre_profesion)\r
+
+      VALUES (seq_id_profesion.NEXTVAL, 'Docente');\r
+
+      \r
+
+      -- =========================\r
+
+      -- INSERCIONES TIPO_PRESTAMO\r
+
+      -- =========================\r
+
+      \r
+
+      INSERT INTO tipo_prestamo (id_tipo_prestamo, nombre_tipo_prestamo)\r
+
+      VALUES (seq_id_tipo_prestamo.NEXTVAL, 'Personal');\r
+
+      \r
+
+      INSERT INTO tipo_prestamo (id_tipo_prestamo, nombre_tipo_prestamo)\r
+
+      VALUES (seq_id_tipo_prestamo.NEXTVAL, 'Auto');\r
+
+      \r
+
+      INSERT INTO tipo_prestamo (id_tipo_prestamo, nombre_tipo_prestamo)\r
+
+      VALUES (seq_id_tipo_prestamo.NEXTVAL, 'Hipoteca');\r
+
+      \r
+
+      INSERT INTO tipo_prestamo (id_tipo_prestamo, nombre_tipo_prestamo)\r
+
+      VALUES (seq_id_tipo_prestamo.NEXTVAL, 'Garantizado con ahorros');\r
+
+      \r
+
+      -- =========================\r
+
+      -- INSERCIONES CLIENTE\r
+
+      -- =========================\r
+
+      \r
+
+      INSERT INTO cliente (\r
+
+      \    id_cliente, cedula, nombre, apellido, sexo, fecha_nacimiento,
+      id_profesion\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_cliente.NEXTVAL,\r
+
+      \    '8-1023-761',\r
+
+      \    'Gabriel',\r
+
+      \    'Gonzalez',\r
+
+      \    'M',\r
+
+      \    TO_DATE('03/03/2005', 'DD/MM/YYYY'),\r
+
+      \    (\r
+
+      \        SELECT id_profesion\r
+
+      \        FROM profesion\r
+
+      \        WHERE nombre_profesion = 'Ingeniero de Software'\r
+
+      \    )\r
+
+      );\r
+
+      \r
+
+      INSERT INTO cliente (\r
+
+      \    id_cliente, cedula, nombre, apellido, sexo, fecha_nacimiento,
+      id_profesion\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_cliente.NEXTVAL,\r
+
+      \    'E-8-199982',\r
+
+      \    'Yongsheng',\r
+
+      \    'Du',\r
+
+      \    'M',\r
+
+      \    TO_DATE('02/02/2005', 'DD/MM/YYYY'),\r
+
+      \    (\r
+
+      \        SELECT id_profesion\r
+
+      \        FROM profesion\r
+
+      \        WHERE nombre_profesion = 'Ingeniero de Software'\r
+
+      \    )\r
+
+      );\r
+
+      \r
+
+      INSERT INTO cliente (\r
+
+      \    id_cliente, cedula, nombre, apellido, sexo, fecha_nacimiento,
+      id_profesion\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_cliente.NEXTVAL,\r
+
+      \    '8-1030-1204',\r
+
+      \    'Kevin',\r
+
+      \    'Pan',\r
+
+      \    'M',\r
+
+      \    TO_DATE('10/04/2005', 'DD/MM/YYYY'),\r
+
+      \    (\r
+
+      \        SELECT id_profesion\r
+
+      \        FROM profesion\r
+
+      \        WHERE nombre_profesion = 'Contador'\r
+
+      \    )\r
+
+      );\r
+
+      \r
+
+      INSERT INTO cliente (\r
+
+      \    id_cliente, cedula, nombre, apellido, sexo, fecha_nacimiento,
+      id_profesion\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_cliente.NEXTVAL,\r
+
+      \    '3-754-534',\r
+
+      \    'David',\r
+
+      \    'Qiu',\r
+
+      \    'M',\r
+
+      \    TO_DATE('15/06/2004', 'DD/MM/YYYY'),\r
+
+      \    (\r
+
+      \        SELECT id_profesion\r
+
+      \        FROM profesion\r
+
+      \        WHERE nombre_profesion = 'Administrador'\r
+
+      \    )\r
+
+      );\r
+
+      \r
+
+      INSERT INTO cliente (\r
+
+      \    id_cliente, cedula, nombre, apellido, sexo, fecha_nacimiento,
+      id_profesion\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_cliente.NEXTVAL,\r
+
+      \    'E-8-220963',\r
+
+      \    'Jenifer',\r
+
+      \    'Albornoz',\r
+
+      \    'F',\r
+
+      \    TO_DATE('20/08/2005', 'DD/MM/YYYY'),\r
+
+      \    (\r
+
+      \        SELECT id_profesion\r
+
+      \        FROM profesion\r
+
+      \        WHERE nombre_profesion = 'Docente'\r
+
+      \    )\r
+
+      );\r
+
+      \r
+
+      COMMIT;\r
+
+      \r
+
+      -- =========================\r
+
+      -- INSERCIONES EMAIL\r
+
+      -- =========================\r
+
+      \r
+
+      INSERT INTO email (\r
+
+      \    id_email, email, tipo_email, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_email.NEXTVAL, 'gabriel.personal@gmail.com', 'Personal', 1\r
+
+      );\r
+
+      \r
+
+      INSERT INTO email (\r
+
+      \    id_email, email, tipo_email, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_email.NEXTVAL, 'gabriel@utp.ac.pa', 'Academico', 1\r
+
+      );\r
+
+      \r
+
+      INSERT INTO email (\r
+
+      \    id_email, email, tipo_email, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_email.NEXTVAL, 'yongsheng.personal@gmail.com', 'Personal', 2\r
+
+      );\r
+
+      \r
+
+      INSERT INTO email (\r
+
+      \    id_email, email, tipo_email, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_email.NEXTVAL, 'kevin.trabajo@empresa.com', 'Trabajo', 3\r
+
+      );\r
+
+      \r
+
+      INSERT INTO email (\r
+
+      \    id_email, email, tipo_email, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_email.NEXTVAL, 'david@utp.ac.pa', 'Academico', 4\r
+
+      );\r
+
+      \r
+
+      INSERT INTO email (\r
+
+      \    id_email, email, tipo_email, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_email.NEXTVAL, 'jenifer.personal@gmail.com', 'Personal', 5\r
+
+      );\r
+
+      \r
+
+      -- =========================\r
+
+      -- INSERCIONES TELEFONO_CLIENTE\r
+
+      -- =========================\r
+
+      \r
+
+      INSERT INTO telefono_cliente (\r
+
+      \    id_telefono, numero_telefono, tipo_telefono, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_telefono.NEXTVAL, '6000-1111', 'Personal', 1\r
+
+      );\r
+
+      \r
+
+      INSERT INTO telefono_cliente (\r
+
+      \    id_telefono, numero_telefono, tipo_telefono, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_telefono.NEXTVAL, '230-1111', 'Residencial', 1\r
+
+      );\r
+
+      \r
+
+      INSERT INTO telefono_cliente (\r
+
+      \    id_telefono, numero_telefono, tipo_telefono, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_telefono.NEXTVAL, '6000-2222', 'Personal', 2\r
+
+      );\r
+
+      \r
+
+      INSERT INTO telefono_cliente (\r
+
+      \    id_telefono, numero_telefono, tipo_telefono, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_telefono.NEXTVAL, '6000-3333', 'Familiar', 3\r
+
+      );\r
+
+      \r
+
+      INSERT INTO telefono_cliente (\r
+
+      \    id_telefono, numero_telefono, tipo_telefono, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_telefono.NEXTVAL, '6000-4444', 'Conyugal', 4\r
+
+      );\r
+
+      \r
+
+      INSERT INTO telefono_cliente (\r
+
+      \    id_telefono, numero_telefono, tipo_telefono, id_cliente\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_telefono.NEXTVAL, '6000-5555', 'Personal', 5\r
+
+      );\r
+
+      \r
+
+      -- =========================\r
+
+      -- INSERCIONES PRESTAMO CORREGIDAS\r
+
+      -- Sin columna monto_prestamo\r
+
+      -- =========================\r
+
+      \r
+
+      INSERT INTO prestamo (\r
+
+      \    id_prestamo,\r
+
+      \    id_cliente,\r
+
+      \    id_tipo_prestamo,\r
+
+      \    num_prestamo,\r
+
+      \    fecha_aprobacion,\r
+
+      \    monto_aprobado,\r
+
+      \    tasa_interes,\r
+
+      \    letra_mensual,\r
+
+      \    monto_pagado,\r
+
+      \    fecha_pago\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_prestamo.NEXTVAL,\r
+
+      \    (\r
+
+      \        SELECT id_cliente\r
+
+      \        FROM cliente\r
+
+      \        WHERE cedula = '8-1023-761'\r
+
+      \    ),\r
+
+      \    (\r
+
+      \        SELECT id_tipo_prestamo\r
+
+      \        FROM tipo_prestamo\r
+
+      \        WHERE nombre_tipo_prestamo = 'Personal'\r
+
+      \    ),\r
+
+      \    'PRE-0001',\r
+
+      \    TO_DATE('10/05/2026', 'DD/MM/YYYY'),\r
+
+      \    5000.00,\r
+
+      \    7.50,\r
+
+      \    250.00,\r
+
+      \    500.00,\r
+
+      \    TO_DATE('20/05/2026', 'DD/MM/YYYY')\r
+
+      );\r
+
+      \r
+
+      INSERT INTO prestamo (\r
+
+      \    id_prestamo,\r
+
+      \    id_cliente,\r
+
+      \    id_tipo_prestamo,\r
+
+      \    num_prestamo,\r
+
+      \    fecha_aprobacion,\r
+
+      \    monto_aprobado,\r
+
+      \    tasa_interes,\r
+
+      \    letra_mensual,\r
+
+      \    monto_pagado,\r
+
+      \    fecha_pago\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_prestamo.NEXTVAL,\r
+
+      \    (\r
+
+      \        SELECT id_cliente\r
+
+      \        FROM cliente\r
+
+      \        WHERE cedula = '8-1023-761'\r
+
+      \    ),\r
+
+      \    (\r
+
+      \        SELECT id_tipo_prestamo\r
+
+      \        FROM tipo_prestamo\r
+
+      \        WHERE nombre_tipo_prestamo = 'Auto'\r
+
+      \    ),\r
+
+      \    'PRE-0002',\r
+
+      \    TO_DATE('12/05/2026', 'DD/MM/YYYY'),\r
+
+      \    12000.00,\r
+
+      \    8.25,\r
+
+      \    450.00,\r
+
+      \    0.00,\r
+
+      \    NULL\r
+
+      );\r
+
+      \r
+
+      INSERT INTO prestamo (\r
+
+      \    id_prestamo,\r
+
+      \    id_cliente,\r
+
+      \    id_tipo_prestamo,\r
+
+      \    num_prestamo,\r
+
+      \    fecha_aprobacion,\r
+
+      \    monto_aprobado,\r
+
+      \    tasa_interes,\r
+
+      \    letra_mensual,\r
+
+      \    monto_pagado,\r
+
+      \    fecha_pago\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_prestamo.NEXTVAL,\r
+
+      \    (\r
+
+      \        SELECT id_cliente\r
+
+      \        FROM cliente\r
+
+      \        WHERE cedula = 'E-8-199982'\r
+
+      \    ),\r
+
+      \    (\r
+
+      \        SELECT id_tipo_prestamo\r
+
+      \        FROM tipo_prestamo\r
+
+      \        WHERE nombre_tipo_prestamo = 'Garantizado con ahorros'\r
+
+      \    ),\r
+
+      \    'PRE-0003',\r
+
+      \    TO_DATE('15/05/2026', 'DD/MM/YYYY'),\r
+
+      \    3000.00,\r
+
+      \    5.75,\r
+
+      \    180.00,\r
+
+      \    180.00,\r
+
+      \    TO_DATE('25/05/2026', 'DD/MM/YYYY')\r
+
+      );\r
+
+      \r
+
+      INSERT INTO prestamo (\r
+
+      \    id_prestamo,\r
+
+      \    id_cliente,\r
+
+      \    id_tipo_prestamo,\r
+
+      \    num_prestamo,\r
+
+      \    fecha_aprobacion,\r
+
+      \    monto_aprobado,\r
+
+      \    tasa_interes,\r
+
+      \    letra_mensual,\r
+
+      \    monto_pagado,\r
+
+      \    fecha_pago\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_prestamo.NEXTVAL,\r
+
+      \    (\r
+
+      \        SELECT id_cliente\r
+
+      \        FROM cliente\r
+
+      \        WHERE cedula = '8-1030-1204'\r
+
+      \    ),\r
+
+      \    (\r
+
+      \        SELECT id_tipo_prestamo\r
+
+      \        FROM tipo_prestamo\r
+
+      \        WHERE nombre_tipo_prestamo = 'Hipoteca'\r
+
+      \    ),\r
+
+      \    'PRE-0004',\r
+
+      \    TO_DATE('18/05/2026', 'DD/MM/YYYY'),\r
+
+      \    85000.00,\r
+
+      \    6.50,\r
+
+      \    950.00,\r
+
+      \    950.00,\r
+
+      \    TO_DATE('28/05/2026', 'DD/MM/YYYY')\r
+
+      );\r
+
+      \r
+
+      INSERT INTO prestamo (\r
+
+      \    id_prestamo,\r
+
+      \    id_cliente,\r
+
+      \    id_tipo_prestamo,\r
+
+      \    num_prestamo,\r
+
+      \    fecha_aprobacion,\r
+
+      \    monto_aprobado,\r
+
+      \    tasa_interes,\r
+
+      \    letra_mensual,\r
+
+      \    monto_pagado,\r
+
+      \    fecha_pago\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_prestamo.NEXTVAL,\r
+
+      \    (\r
+
+      \        SELECT id_cliente\r
+
+      \        FROM cliente\r
+
+      \        WHERE cedula = '3-754-534'\r
+
+      \    ),\r
+
+      \    (\r
+
+      \        SELECT id_tipo_prestamo\r
+
+      \        FROM tipo_prestamo\r
+
+      \        WHERE nombre_tipo_prestamo = 'Personal'\r
+
+      \    ),\r
+
+      \    'PRE-0005',\r
+
+      \    TO_DATE('20/05/2026', 'DD/MM/YYYY'),\r
+
+      \    2500.00,\r
+
+      \    9.00,\r
+
+      \    150.00,\r
+
+      \    0.00,\r
+
+      \    NULL\r
+
+      );\r
+
+      \r
+
+      INSERT INTO prestamo (\r
+
+      \    id_prestamo,\r
+
+      \    id_cliente,\r
+
+      \    id_tipo_prestamo,\r
+
+      \    num_prestamo,\r
+
+      \    fecha_aprobacion,\r
+
+      \    monto_aprobado,\r
+
+      \    tasa_interes,\r
+
+      \    letra_mensual,\r
+
+      \    monto_pagado,\r
+
+      \    fecha_pago\r
+
+      )\r
+
+      VALUES (\r
+
+      \    seq_id_prestamo.NEXTVAL,\r
+
+      \    (\r
+
+      \        SELECT id_cliente\r
+
+      \        FROM cliente\r
+
+      \        WHERE cedula = 'E-8-220963'\r
+
+      \    ),\r
+
+      \    (\r
+
+      \        SELECT id_tipo_prestamo\r
+
+      \        FROM tipo_prestamo\r
+
+      \        WHERE nombre_tipo_prestamo = 'Auto'\r
+
+      \    ),\r
+
+      \    'PRE-0006',\r
+
+      \    TO_DATE('22/05/2026', 'DD/MM/YYYY'),\r
+
+      \    10000.00,\r
+
+      \    8.00,\r
+
+      \    400.00,\r
+
+      \    400.00,\r
+
+      \    TO_DATE('30/05/2026', 'DD/MM/YYYY')\r
+
+      );\r
+
+      \r
+
+      COMMIT;"
+    languageId: oracle-sql
+  - kind: 1
+    value: VERIFICACION DE INSERT
+    languageId: markdown
+  - kind: 2
+    value: "SELECT \r
+
+      \    pr.id_prestamo,\r
+
+      \    c.cedula,\r
+
+      \    c.nombre,\r
+
+      \    c.apellido,\r
+
+      \    tp.nombre_tipo_prestamo,\r
+
+      \    pr.num_prestamo,\r
+
+      \    pr.fecha_aprobacion,\r
+
+      \    pr.monto_aprobado,\r
+
+      \    pr.tasa_interes,\r
+
+      \    pr.letra_mensual,\r
+
+      \    pr.monto_pagado,\r
+
+      \    pr.fecha_pago\r
+
+      FROM prestamo pr\r
+
+      INNER JOIN cliente c\r
+
+      \    ON pr.id_cliente = c.id_cliente\r
+
+      INNER JOIN tipo_prestamo tp\r
+
+      \    ON pr.id_tipo_prestamo = tp.id_tipo_prestamo\r
+
+      ORDER BY pr.id_prestamo;"
+    languageId: oracle-sql
+  - kind: 1
+    value: El modelo físico fue implementado correctamente a partir del modelo
+      lógico relacional normalizado. Se separaron los datos multivaluados del
+      cliente, como correos y teléfonos, en tablas independientes. Además, se
+      crearon catálogos para profesión y tipo de préstamo, evitando redundancia
+      y mejorando la integridad de los datos. Las restricciones aplicadas
+      permiten controlar claves primarias, claves foráneas, valores únicos,
+      campos obligatorios y reglas semánticas propias del negocio financiero.
+    languageId: markdown
+  - kind: 1
+    value: "# EDICIONES / MODIFICACIONES DE TABLAS"
+    languageId: markdown
+  - kind: 1
+    value: AÑADIR ATRIBUTO EDAD A CLIENTE
+    languageId: markdown
+  - kind: 2
+    value: "ALTER TABLE cliente \r
+
+      \    ADD edad NUMBER;\r
+
+      \r
+
+      /* \r
+
+      UPDATE cliente\r
+
+      SET edad = FLOOR(MONTHS_BETWEEN(SYSDATE, fecha_nacimiento) / 12);\r
+
+      */"
+    languageId: oracle-sql
+  - kind: 1
+    value: Agregar una tabla al modelo fisico que almacene las sucursales de la
+      empresa la financiera con las restricciones correspondientes
+    languageId: markdown
+  - kind: 2
+    value: "\r
+
+      CREATE TABLE sucursal (\r
+
+      \    cod_sucursal NUMBER PRIMARY KEY, \r
+
+      \    nombre_sucursal VARCHAR2(100) NOT NULL UNIQUE,\r
+
+      \    tipoprestamo NUMBER NOT NULL, -- tipo de prestamo que se maneja en la
+      sucursal\r
+
+      \    CONSTRAINT fk_tipo_prestamo_sucursal \r
+
+      \        FOREIGN KEY (tipoprestamo)\r
+
+      \        REFERENCES tipo_prestamo(id_tipo_prestamo), -- referencia a la
+      tabla tipo_prestamo\r
+
+      \    montoprestamo NUMBER NOT NULL CHECK (montoprestamo > 0),\r
+
+      \    CONSTRAINT fk_monto_prestamo_sucursal \r
+
+      \        FOREIGN KEY (montoprestamo)\r
+
+      \        REFERENCES prestamo(monto_aprobado) -- referencia a la tabla
+      prestamo.monto_aprobado\r
+
+      )"
+    languageId: oracle-sql
+  - kind: 1
+    value: Agregar a la tabla clientes y prestamos el atributo de codigo sucursal
+      (cod_sucursal)
+    languageId: markdown
+  - kind: 2
+    value: "ALTER TABLE prestamo\r
+
+      ADD (\r
+
+      \    cod_sucursal NUMBER,\r
+
+      \    CONSTRAINT fk_sucursal_prestamo\r
+
+      \        FOREIGN KEY (cod_sucursal)\r
+
+      \        REFERENCES sucursal(cod_sucursal)\r
+
+      );\r
+
+      \r
+
+      \r
+
+      ALTER TABLE cliente\r
+
+      ADD (\r
+
+      \    cod_sucursal NUMBER,\r
+
+      \    CONSTRAINT fk_sucursal_prestamo\r
+
+      \        FOREIGN KEY (cod_sucursal)\r
+
+      \        REFERENCES sucursal(cod_sucursal)\r
+
+      );\r\n"
+    languageId: oracle-sql
+  - kind: 1
+    value: "Agregar a la tabla del prestamos los siguientes atributos:\r
+
+      1. saldo_actual, que cuando el préstamo es aprobado es equivalente al
+      monto aprobado\r
+
+      2. interés_pagado que será cargado a partir de los pagos realizados por
+      cliente en proceso de aplicación\r
+
+      3. fecha_modificacion (ddmmyyyy hhmmss)\r
+
+      4. usuario (?)\r
+
+      \  "
+    languageId: markdown
+  - kind: 1
+    value: "Agregar una tabla transaccional para recibir los pagos de los clientes
+      con las restricciones correspondiente que contendrá la siguiente
+      atributos:\r
+
+      \r
+
+      Transacpagos (cod_sucursal, \r
+
+      \    id_transaccion, \r
+
+      \    id_cliente, \r
+
+      \    tipoprestamo,\r
+
+      \    fechatransaccion, \r
+
+      \    monto del pago, \r
+
+      \    fechainsercion(dd/mm/yyyy, hh:mm:ss, \r
+
+      \    usuario); "
+    languageId: markdown
+  - kind: 1
+    value: "## Implementacion de procedimientos\r
+
+      - Almacenado para carga de tablas(telefono correo profesion sucursales
+      tipos de prestamos)\r
+
+      - almacenado para carga de clientes con su informacion\r
+
+      \  - aqui se debe crear una funcion calcular_edad\r
+
+      - almacenado para la carga o insercion de los prestamos aprobados con toda
+      la informacion correspondiente. Igualmente este proceso debera actualizar
+      la infomacion de prestamo en la tabla de sucursales \r
+
+      - Almacenado que actualice el pago recibo a los préstamos\r
+
+      correspondientes. Deberá implementar un cursor que busque los pagos
+      insertados uno a uno y los vaya actualizando en la tabla de préstamos y en
+      la tabla sucursales.\r
+
+      \  - para aplicar pago primero debe rebajarlo del saldo_prestamo, el
+      prestamo paga interes\r
+
+      \  - el interes se calcula sobre saldo_prestamo:\r
+
+      \    - (saldo_prestamo * tasa_interes%), pago_interes es mensual (1000*1%)
+      = 50.00\r
+
+      \  - "
+    languageId: markdown
