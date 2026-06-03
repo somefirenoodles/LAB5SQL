@@ -1137,90 +1137,48 @@ cells:
     value: AÑADIR ATRIBUTO EDAD A CLIENTE
     languageId: markdown
   - kind: 2
-    value: "ALTER TABLE cliente \r
+    value: "ALTER TABLE cliente\r
 
       \    ADD edad NUMBER;\r
 
       \r
 
-      /* \r
+      /* funcion para calcular la edad a partir de la fecha de nacimiento y la
+      fecha actual \r
 
       UPDATE cliente\r
 
       SET edad = FLOOR(MONTHS_BETWEEN(SYSDATE, fecha_nacimiento) / 12);\r
 
-      */"
+      */ "
     languageId: oracle-sql
   - kind: 1
     value: Agregar una tabla al modelo fisico que almacene las sucursales de la
       empresa la financiera con las restricciones correspondientes
     languageId: markdown
   - kind: 2
-    value: "\r
+    value: "CREATE TABLE sucursal (\r
 
-      CREATE TABLE sucursal (\r
+      \    cod_sucursal VARCHAR2(2) PRIMARY KEY,\r
 
-      \    cod_sucursal NUMBER PRIMARY KEY, \r
+      \    nombre_sucursal VARCHAR2(50) NOT NULL UNIQUE,\r
 
-      \    nombre_sucursal VARCHAR2(100) NOT NULL UNIQUE,\r
+      \    tipo_prestamo VARCHAR2(50) NOT NULL,\r
 
-      \    tipoprestamo NUMBER NOT NULL, -- tipo de prestamo que se maneja en la
-      sucursal\r
+      \    monto_prestamos NUMBER(15,2) DEFAULT 0 NOT NULL\r
 
-      \    CONSTRAINT fk_tipo_prestamo_sucursal \r
+      \        CHECK (monto_prestamos >= 0)\r
 
-      \        FOREIGN KEY (tipoprestamo)\r
-
-      \        REFERENCES tipo_prestamo(id_tipo_prestamo), -- referencia a la
-      tabla tipo_prestamo\r
-
-      \    montoprestamo NUMBER NOT NULL CHECK (montoprestamo > 0),\r
-
-      \    CONSTRAINT fk_monto_prestamo_sucursal \r
-
-      \        FOREIGN KEY (montoprestamo)\r
-
-      \        REFERENCES prestamo(monto_aprobado) -- referencia a la tabla
-      prestamo.monto_aprobado\r
-
-      )"
+      );"
     languageId: oracle-sql
   - kind: 1
     value: Agregar a la tabla clientes y prestamos el atributo de codigo sucursal
       (cod_sucursal)
     languageId: markdown
   - kind: 2
-    value: "ALTER TABLE prestamo\r
+    value: "ALTER TABLE cliente\r
 
-      ADD (\r
-
-      \    cod_sucursal NUMBER,\r
-
-      \    CONSTRAINT fk_sucursal_prestamo\r
-
-      \        FOREIGN KEY (cod_sucursal)\r
-
-      \        REFERENCES sucursal(cod_sucursal)\r
-
-      );\r
-
-      \r
-
-      \r
-
-      ALTER TABLE cliente\r
-
-      ADD (\r
-
-      \    cod_sucursal NUMBER,\r
-
-      \    CONSTRAINT fk_sucursal_prestamo\r
-
-      \        FOREIGN KEY (cod_sucursal)\r
-
-      \        REFERENCES sucursal(cod_sucursal)\r
-
-      );\r\n"
+      ADD cod_sucursal VARCHAR2(2);"
     languageId: oracle-sql
   - kind: 1
     value: "Agregar a la tabla del prestamos los siguientes atributos:\r
@@ -1237,6 +1195,47 @@ cells:
 
       \  "
     languageId: markdown
+  - kind: 2
+    value: "ALTER TABLE prestamo\r
+
+      ADD cod_sucursal VARCHAR2(2);\r
+
+      \r
+
+      ALTER TABLE prestamo\r
+
+      ADD CONSTRAINT fk_prestamo_sucursal FOREIGN KEY (cod_sucursal)\r
+
+      \    REFERENCES sucursal(cod_sucursal);\r
+
+      \r
+
+      \    ALTER TABLE prestamo\r
+
+      ADD saldoactual NUMBER(15,2)\r
+
+      \    CHECK (saldoactual >= 0);\r
+
+      \r
+
+      ALTER TABLE prestamo\r
+
+      ADD interespagado NUMBER(15,2) DEFAULT 0 NOT NULL\r
+
+      \    CHECK (interespagado >= 0);\r
+
+      \r
+
+      ALTER TABLE prestamo\r
+
+      \    ADD fechamodificacion DATE;\r
+
+      \r
+
+      ALTER TABLE prestamo\r
+
+      \    ADD usuario VARCHAR2(50);"
+    languageId: oracle-sql
   - kind: 1
     value: "Agregar una tabla transaccional para recibir los pagos de los clientes
       con las restricciones correspondiente que contendrá la siguiente
@@ -1260,6 +1259,47 @@ cells:
 
       \    usuario); "
     languageId: markdown
+  - kind: 2
+    value: "CREATE TABLE transacpagos (\r
+
+      \    cod_sucursal VARCHAR2(2) NOT NULL,\r
+
+      \    id_transaccion NUMBER PRIMARY KEY,\r
+
+      \    id_cliente NUMBER NOT NULL,\r
+
+      \    tipo_prestamo VARCHAR2(50) NOT NULL,\r
+
+      \    fecha_transaccion DATE NOT NULL,\r
+
+      \    monto_pago NUMBER(15,2) NOT NULL\r
+
+      \        CHECK (monto_pago > 0),\r
+
+      \    fecha_insercion DATE DEFAULT SYSDATE NOT NULL,\r
+
+      \    usuario VARCHAR2(50) NOT NULL,\r
+
+      \r
+
+      \    CONSTRAINT fk_transac_sucursal FOREIGN KEY (cod_sucursal)\r
+
+      \        REFERENCES sucursal(cod_sucursal),\r
+
+      \r
+
+      \    CONSTRAINT fk_transac_cliente FOREIGN KEY (id_cliente)\r
+
+      \        REFERENCES cliente(id_cliente)\r
+
+      );"
+    languageId: oracle-sql
+  - kind: 1
+    value: SECUENCIA PARA TRANSACCIONES DE PAGO
+    languageId: markdown
+  - kind: 2
+    value: CREATE SEQUENCE seq_id_transaccion START WITH 1 INCREMENT BY 1 NOCYCLE;
+    languageId: oracle-sql
   - kind: 1
     value: "## Implementacion de procedimientos\r
 
